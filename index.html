@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CipherTrack | CipherSchools Partner Campus Attendance Desk</title>
+  <meta name="description" content="CipherSchools operational platform for tracking, reconciling, and governing attendance for 20 mentors deployed at university partner campuses via manual entries and Excel sheet imports.">
+  <link rel="icon" type="image/png" href="assets/cipherschools-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Top Operational Bar -->
+    <header class="top-nav">
+      <div class="nav-brand-group">
+        <div class="brand-combo">
+          <!-- CipherSchools Brand (Strictly "CipherTrack" with no space) -->
+          <div class="brand-item">
+            <img 
+              src="assets/cipherschools-logo.png" 
+              alt="CipherSchools Logo" 
+              class="brand-logo-img"
+              onerror="this.onerror=null; this.src='https://ik.imagekit.io/cipherschools/CipherSchools/Cipherschools_192x192_8mBbikbYO.png';"
+            >
+            <div class="brand-text-col">
+              <span class="brand-title">Cipher<span class="brand-title-accent">Track</span></span>
+              <span class="brand-tagline">by CipherSchools</span>
+            </div>
+          </div>
+
+          <!-- Collaboration Divider -->
+          <div class="brand-collab-divider" title="In partnership with">
+            <span>&times;</span>
+          </div>
+
+          <!-- University Campus Selector Dropdown with Small Logo -->
+          <div class="brand-item">
+            <div class="university-dropdown-wrap" title="Switch Partner University Campus">
+              <div class="campus-logo-badge">
+                <img 
+                  id="currentCampusLogo"
+                  src="assets/lpu-logo.svg" 
+                  alt="University Logo" 
+                  class="campus-logo-img"
+                >
+              </div>
+              <select id="universitySelect" class="university-select" aria-label="Select University Campus">
+                <option value="lpu" selected>Lovely Professional University (LPU)</option>
+                <option value="cu">Chandigarh University (CU)</option>
+                <option value="chitkara">Chitkara University</option>
+                <option value="thapar">Thapar Institute of Engg & Tech</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Action Controls (Only Necessary Primary Tools) -->
+      <div class="nav-actions">
+        <button id="btnOpenExcelModal" class="btn btn-excel btn-sm" title="Import attendance sheet from Excel / CSV">
+          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <line x1="9" y1="15" x2="15" y2="15"/>
+          </svg>
+          <span>Import Excel Sheet</span>
+        </button>
+
+        <button id="btnOpenManualEntryModal" class="btn btn-secondary btn-sm" title="Manually record or edit a mentor punch">
+          <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <span>+ Log Manual Entry</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Operational Context Strip -->
+    <div class="context-strip">
+      <div class="context-item">
+        <span class="context-key">CipherSchools Lead:</span>
+        <span class="context-val">Naveen Kumar (On-Campus Operations)</span>
+      </div>
+      <div class="context-divider"></div>
+      <div class="context-item">
+        <span class="context-key">Selected Campus:</span>
+        <span class="context-val text-primary" id="contextUniversityName">Lovely Professional University (LPU), Phagwara, Punjab</span>
+      </div>
+      <div class="context-divider"></div>
+      <div class="context-item">
+        <span class="context-key">Punctuality Rule:</span>
+        <span class="context-val">Class at 09:30 AM ➔ Must punch in before 09:30 AM</span>
+      </div>
+      <div class="context-divider"></div>
+      <div class="context-item highlight">
+        <span class="context-key">Action Needed:</span>
+        <span class="context-val text-amber" id="unresolvedAlert">6 Mentors require attendance action</span>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs: Streamlined Architecture -->
+    <nav class="solution-tabs" role="tablist">
+      <button class="tab-btn active" data-tab="tab-dashboard" role="tab" id="tabNavDashboard">
+        <span class="tab-num">01</span>
+        <span class="tab-title">Solution 4: Accountability Dashboard</span>
+        <span class="tab-badge" id="badgeDashboardCompliance">85.0% On-Time</span>
+      </button>
+
+      <button class="tab-btn" data-tab="tab-reconciliation" role="tab" id="tabNavReconciliation">
+        <span class="tab-num">02</span>
+        <span class="tab-title">Solution 1: Daily Attendance Reconciliation</span>
+        <span class="tab-badge badge-warning" id="badgeReconciliationDiscrepancies">5 Incomplete</span>
+      </button>
+
+      <button class="tab-btn" data-tab="tab-reminders" role="tab" id="tabNavReminders">
+        <span class="tab-num">03</span>
+        <span class="tab-title">Solution 2: Automated Reminders</span>
+        <span class="tab-badge badge-info" id="badgeRemindersActive">3 Rules Active</span>
+      </button>
+
+      <button class="tab-btn" data-tab="tab-exceptions" role="tab" id="tabNavExceptions">
+        <span class="tab-num">04</span>
+        <span class="tab-title">Solution 3: Exception Reporting</span>
+        <span class="tab-badge badge-danger" id="badgeExceptionsPending">6 Exceptions</span>
+      </button>
+
+      <button class="tab-btn" data-tab="tab-analysis" role="tab" id="tabNavAnalysis">
+        <span class="tab-num">05</span>
+        <span class="tab-title">Data Analysis & Trends</span>
+        <span class="tab-badge badge-info">SLA & Charts</span>
+      </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- ========================================== -->
+      <!-- TAB 1: SOLUTION 4 - ACCOUNTABILITY DASHBOARD (CLEAN & FOCUSED) -->
+      <!-- ========================================== -->
+      <section id="tab-dashboard" class="tab-panel active" role="tabpanel">
+        <div class="panel-header">
+          <div>
+            <h1 class="panel-title">Operational Accountability Dashboard</h1>
+            <p class="panel-desc" id="dashboardDesc">Real-time attendance oversight for 20 CipherSchools mentors deployed at <span id="dashboardUniName">Lovely Professional University (LPU)</span>. Evaluates scheduled class arrival punctuality (before 09:30 AM), sign-out completeness, and billing certainty.</p>
+          </div>
+          <div class="header-action-group">
+            <span class="timestamp-tag">Mode: Manual Roster & Excel Import</span>
+          </div>
+        </div>
+
+        <!-- Metric KPI Cards: Essential High-Level Numbers -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-top">
+              <span class="kpi-title">Deployed Mentors</span>
+              <span class="kpi-icon icon-users">👥</span>
+            </div>
+            <div class="kpi-val" id="kpiTotalMentors">20</div>
+            <div class="kpi-footer">
+              <span class="kpi-sub">Assigned across Tech Blocks</span>
+            </div>
+          </div>
+
+          <div class="kpi-card highlight-success">
+            <div class="kpi-top">
+              <span class="kpi-title">Verified Complete</span>
+              <span class="kpi-icon icon-check">✓</span>
+            </div>
+            <div class="kpi-val text-success" id="kpiVerifiedCount">14 <span class="kpi-denominator">/ 20</span></div>
+            <div class="kpi-footer">
+              <span class="pill pill-success" id="kpiVerifiedPct">70.0% Complete</span>
+              <span class="kpi-sub">Signed IN & OUT successfully</span>
+            </div>
+          </div>
+
+          <div class="kpi-card highlight-danger">
+            <div class="kpi-top">
+              <span class="kpi-title">Attendance Exceptions</span>
+              <span class="kpi-icon icon-alert">⚠️</span>
+            </div>
+            <div class="kpi-val text-danger" id="kpiExceptionsCount">6</div>
+            <div class="kpi-footer">
+              <span class="pill pill-danger" id="kpiExceptionsDetail">4 Missing Out • 1 Missing In • 1 Absent</span>
+            </div>
+          </div>
+
+          <div class="kpi-card highlight-brand">
+            <div class="kpi-top">
+              <span class="kpi-title">Class Punctuality Rate</span>
+              <span class="kpi-icon icon-chart">🎯</span>
+            </div>
+            <div class="kpi-val text-primary" id="kpiComplianceScore">85.0%</div>
+            <div class="kpi-footer">
+              <span class="kpi-sub text-muted">Punched before 09:30 AM class</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mentors Operational Registry Table (Clean, Uncluttered Core Workspace) -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title" id="tableHeaderTitle">Mentor Attendance & Class Punctuality Registry (20 Mentors)</h3>
+              <p class="card-subtitle">Comparing scheduled class start (09:30 AM) against actual check-in time (On-time vs. Late)</p>
+            </div>
+            <div class="filter-controls">
+              <div class="search-box">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" id="dashboardSearchInput" placeholder="Search mentor, ID, dept...">
+              </div>
+              <select id="dashboardStatusFilter" class="form-select-sm">
+                <option value="all">All Mentors (20)</option>
+                <option value="on_time">Punched On Time (Before 09:30 AM)</option>
+                <option value="late">Punched Late (After 09:30 AM)</option>
+                <option value="exception">With Exceptions Only (6)</option>
+                <option value="missing_out">Missing Check-Out (4)</option>
+                <option value="missing_in">Missing Check-In (1)</option>
+                <option value="absent">Unreported / Absent (1)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table" id="dashboardMentorsTable">
+              <thead>
+                <tr>
+                  <th>Mentor ID & Name</th>
+                  <th>Department & Track</th>
+                  <th>Scheduled Class</th>
+                  <th>Actual Check-In</th>
+                  <th>Class Punctuality (Before 09:30 AM)</th>
+                  <th>Actual Check-Out</th>
+                  <th>Net Hours</th>
+                  <th>Today's Status</th>
+                  <th class="text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardTableBody">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB 2: SOLUTION 1 - ATTENDANCE RECONCILIATION -->
+      <!-- ========================================== -->
+      <section id="tab-reconciliation" class="tab-panel" role="tabpanel">
+        <div class="panel-header">
+          <div>
+            <h1 class="panel-title">Daily Attendance Reconciliation Desk</h1>
+            <p class="panel-desc">Reconcile manual university sign-in sheets and imported Excel rosters against scheduled class start times (09:30 AM). Resolve missing check-outs, adjust punch timings, and eliminate billing gaps.</p>
+          </div>
+          <div class="header-action-group">
+            <button class="btn btn-secondary btn-sm" id="btnAutoPairCandidates">
+              <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Auto-Suggest Timetable Matches
+            </button>
+            <button class="btn btn-primary btn-sm" id="btnBatchReconcile">
+              <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+              </svg>
+              Commit All Reconciled
+            </button>
+          </div>
+        </div>
+
+        <!-- Reconciliation Guide / Strategy Cards -->
+        <div class="reconcile-pipeline">
+          <div class="pipeline-step">
+            <div class="step-num">Step 1</div>
+            <div class="step-title">Attendance Ingestion</div>
+            <div class="step-desc">Via Excel sheet import or coordinator manual log.</div>
+            <div class="step-stat" id="statRawPunchesCount">20 Mentor Records</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step active">
+            <div class="step-num">Step 2</div>
+            <div class="step-title">Class Schedule Check</div>
+            <div class="step-desc">Evaluates arrival before 09:30 AM class start.</div>
+            <div class="step-stat text-amber" id="statUnpairedCount">5 Incomplete Records</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step">
+            <div class="step-num">Step 3</div>
+            <div class="step-title">Coordinator Regularization</div>
+            <div class="step-desc">Verify via classroom roster or LMS.</div>
+            <div class="step-stat" id="statResolvedCount">0 Resolved Today</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step">
+            <div class="step-num">Step 4</div>
+            <div class="step-title">Payroll & University Sign-off</div>
+            <div class="step-desc">Verified hours submitted to academic coordinators.</div>
+            <div class="step-stat text-success">Auditable Status</div>
+          </div>
+        </div>
+
+        <!-- Reconciliation Workspace -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Interactive Attendance Matching Matrix</h3>
+              <p class="card-subtitle">Verify recorded check-ins against 09:30 AM scheduled classes and 17:00 PM shift end</p>
+            </div>
+            <div class="filter-controls">
+              <button class="btn btn-outline btn-xs" id="btnFilterReconcileNeedsAction">
+                Show Incomplete Only (<span id="reconcileNeedsActionCount">5</span>)
+              </button>
+              <button class="btn btn-outline btn-xs" id="btnFilterReconcileAll">Show All 20</button>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table" id="reconcileTable">
+              <thead>
+                <tr>
+                  <th>Mentor</th>
+                  <th>Scheduled Class</th>
+                  <th>Actual Check-In</th>
+                  <th>Punctuality Status</th>
+                  <th>Actual Check-Out</th>
+                  <th>System Suggestion / Evidence</th>
+                  <th>Status</th>
+                  <th class="text-right">Resolve Action</th>
+                </tr>
+              </thead>
+              <tbody id="reconcileTableBody">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Audit Log of Actions Taken Today -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Coordinator Reconciliation Audit Trail</h3>
+              <p class="card-subtitle">Immutable log of manual adjustments and timetable validations for audit compliance</p>
+            </div>
+            <span class="badge badge-neutral" id="auditCountBadge">0 actions logged today</span>
+          </div>
+          <div class="card-body">
+            <div class="audit-timeline" id="auditTimeline">
+              <div class="empty-state">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <polyline points="10 9 9 9 8 9"/>
+                </svg>
+                <p>No manual adjustments made yet today. Click "Reconcile / Adjust" on any mentor with an incomplete punch to log a resolution.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB 3: SOLUTION 2 - AUTOMATED REMINDERS -->
+      <!-- ========================================== -->
+      <section id="tab-reminders" class="tab-panel" role="tabpanel">
+        <div class="panel-header">
+          <div>
+            <h1 class="panel-title">Automated Reminders & Dispatch Engine</h1>
+            <p class="panel-desc">Proactive trigger rules to alert mentors before class starts (09:30 AM) and before shift end (17:00 PM). Reduces forgotten sign-ins and sign-outs automatically via WhatsApp and SMS.</p>
+          </div>
+          <div class="header-action-group">
+            <button class="btn btn-secondary btn-sm" id="btnTestTriggerMorning">
+              <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              Simulate 09:15 AM Pre-Class Alert
+            </button>
+            <button class="btn btn-primary btn-sm" id="btnTestTriggerEvening">
+              <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              Simulate 16:45 PM Exit Sign-Out Alert
+            </button>
+          </div>
+        </div>
+
+        <!-- 3 Trigger Rule Cards -->
+        <div class="rules-grid">
+          <!-- Rule 1: Pre-Class Arrival Nudge -->
+          <div class="rule-card">
+            <div class="rule-card-top">
+              <div class="rule-icon icon-sun">🌅</div>
+              <div class="rule-meta">
+                <span class="rule-tag">Rule #1 • Class Punctuality</span>
+                <h4 class="rule-name">09:15 AM Pre-Class Check-In Alert</h4>
+              </div>
+              <label class="switch" title="Toggle rule active status">
+                <input type="checkbox" id="ruleToggle1" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="rule-body">
+              <div class="rule-param-row">
+                <span class="param-key">Trigger Time:</span>
+                <span class="param-val">09:15 AM (15m before 09:30 AM class)</span>
+              </div>
+              <div class="rule-param-row">
+                <span class="param-key">Condition:</span>
+                <span class="param-val text-amber">No check-in punch logged yet</span>
+              </div>
+              <div class="rule-param-row">
+                <span class="param-key">Dispatch Channels:</span>
+                <span class="param-val">WhatsApp + SMS push</span>
+              </div>
+              <div class="message-preview-bubble">
+                <span class="bubble-sender">CipherSchools Bot:</span>
+                <p>"Good morning {Mentor_Name}! Your scheduled session begins at 09:30 AM in {Classroom}. Please sign in before 09:30 AM to ensure on-time compliance."</p>
+              </div>
+            </div>
+            <div class="rule-footer">
+              <span class="rule-stats">Sent today: <strong id="rule1SentCount">2 alerts</strong></span>
+              <button class="btn btn-outline btn-xs" onclick="window.app.triggerRuleManually(1)">Test Trigger</button>
+            </div>
+          </div>
+
+          <!-- Rule 2: Evening Sign-Out Safeguard -->
+          <div class="rule-card">
+            <div class="rule-card-top">
+              <div class="rule-icon icon-sunset">🌇</div>
+              <div class="rule-meta">
+                <span class="rule-tag">Rule #2 • Sign-Out Safeguard</span>
+                <h4 class="rule-name">16:45 PM Shift-End Check-Out Reminder</h4>
+              </div>
+              <label class="switch" title="Toggle rule active status">
+                <input type="checkbox" id="ruleToggle2" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="rule-body">
+              <div class="rule-param-row">
+                <span class="param-key">Trigger Time:</span>
+                <span class="param-val">16:45 PM (15 min before shift end)</span>
+              </div>
+              <div class="rule-param-row">
+                <span class="param-key">Condition:</span>
+                <span class="param-val text-amber">Checked-in, No exit punch yet</span>
+              </div>
+              <div class="rule-param-row">
+                <span class="param-key">Dispatch Channels:</span>
+                <span class="param-val">WhatsApp + App Notification</span>
+              </div>
+              <div class="message-preview-bubble">
+                <span class="bubble-sender">CipherSchools Bot:</span>
+                <p>"Hi {Mentor_Name}! Your scheduled session finishes at 17:00 PM. Please remember to record your exit punch on the register before leaving campus for full shift credit."</p>
+              </div>
+            </div>
+            <div class="rule-footer">
+              <span class="rule-stats">Scheduled for: <strong>16:45 PM Today</strong></span>
+              <button class="btn btn-outline btn-xs" onclick="window.app.triggerRuleManually(2)">Test Trigger</button>
+            </div>
+          </div>
+
+          <!-- Rule 3: Coordinator Escalation Digest -->
+          <div class="rule-card">
+            <div class="rule-card-top">
+              <div class="rule-icon icon-bell">🚨</div>
+              <div class="rule-meta">
+                <span class="rule-tag">Rule #3 • Supervisor Escalation</span>
+                <h4 class="rule-name">09:40 AM Class Punctuality Digest</h4>
+              </div>
+              <label class="switch" title="Toggle rule active status">
+                <input type="checkbox" id="ruleToggle3" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="rule-body">
+              <div class="rule-param-row">
+                <span class="param-key">Trigger Time:</span>
+                <span class="param-val">09:40 AM (10 min after class start)</span>
+              </div>
+              <div class="rule-param-row">
+                <span class="param-key">Condition:</span>
+                <span class="param-val text-amber">Any mentor missing or late</span>
+              </div>
+              <div class="rule-param-row">
+                <span class="param-key">Recipient:</span>
+                <span class="param-val">Naveen Kumar (CipherSchools Ops Lead)</span>
+              </div>
+              <div class="message-preview-bubble">
+                <span class="bubble-sender">Operations Alert:</span>
+                <p>"[Punctuality Digest] 17 mentors arrived before 09:30 AM class. 2 late arrivals (Rohan Varma, Siddharth Rao). 1 absent (Sneha Mukherjee)."</p>
+              </div>
+            </div>
+            <div class="rule-footer">
+              <span class="rule-stats">Sent at: <strong>09:40 AM (Delivered)</strong></span>
+              <button class="btn btn-outline btn-xs" onclick="window.app.triggerRuleManually(3)">Test Trigger</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Dispatch Logs & Interactive WhatsApp Simulator -->
+        <div class="dashboard-grid-two mt-4">
+          <!-- Dispatch Log Table -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Today's Dispatch History</h3>
+                <p class="card-subtitle">Real-time status of outgoing alerts & mentor responses</p>
+              </div>
+              <span class="badge badge-info" id="dispatchTotalCountBadge">6 Reminders Dispatched</span>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-container">
+                <table class="data-table" id="dispatchLogTable">
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Mentor</th>
+                      <th>Trigger Type</th>
+                      <th>Channel</th>
+                      <th>Status</th>
+                      <th>Reply Received</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dispatchLogBody">
+                    <!-- Injected via JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Simulator Phone Preview -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Live WhatsApp Simulator</h3>
+                <p class="card-subtitle">Interactive WhatsApp delivery preview & mentor response flow</p>
+              </div>
+              <div class="simulator-select-wrap">
+                <select id="simTargetMentor" class="form-select-sm">
+                  <!-- Injected via JS -->
+                </select>
+              </div>
+            </div>
+            <div class="card-body simulator-body">
+              <div class="phone-mockup">
+                <div class="phone-header">
+                  <div class="phone-avatar">
+                    <img src="assets/cipherschools-logo.png" alt="CS" style="width:24px; height:24px; object-fit:contain;">
+                  </div>
+                  <div class="phone-user">
+                    <span class="phone-name">CipherSchools Desk</span>
+                    <span class="phone-status">Official Bot • Online</span>
+                  </div>
+                </div>
+                <div class="phone-messages" id="phoneChatThread">
+                  <!-- Interactive messages rendered here -->
+                </div>
+                <div class="phone-input-bar">
+                  <input type="text" id="phoneQuickReplyInput" placeholder="Simulate mentor response..." value="In class lab 402, punched in!">
+                  <button class="btn btn-primary btn-xs" id="btnSendSimulatedReply">Reply</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB 4: SOLUTION 3 - EXCEPTION REPORTING -->
+      <!-- ========================================== -->
+      <section id="tab-exceptions" class="tab-panel" role="tabpanel">
+        <div class="panel-header">
+          <div>
+            <h1 class="panel-title">Attendance Exception Reporting Desk</h1>
+            <p class="panel-desc">Audit violations including late arrivals (after 09:30 AM), missing check-outs, missing check-ins, and under-hour shifts. Export formal compliance reports for university stakeholders.</p>
+          </div>
+          <div class="header-action-group">
+            <button class="btn btn-secondary btn-sm" id="btnExportCSV">
+              <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Export CSV
+            </button>
+            <button class="btn btn-primary btn-sm" id="btnGeneratePDFReport">
+              <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
+              Generate Official Audit Report
+            </button>
+          </div>
+        </div>
+
+        <!-- Exception Summary Mini Cards -->
+        <div class="exception-summary-row">
+          <div class="summary-pill active" data-filter="all">
+            <span class="pill-label">All Exceptions</span>
+            <span class="pill-count" id="countAllExceptions">6</span>
+          </div>
+          <div class="summary-pill" data-filter="late_arrival">
+            <span class="pill-label">Late Arrival (&gt; 09:30 AM)</span>
+            <span class="pill-count text-danger" id="countLateArrivals">3</span>
+          </div>
+          <div class="summary-pill" data-filter="missing_out">
+            <span class="pill-label">Missing Check-Out</span>
+            <span class="pill-count text-amber" id="countMissingOut">4</span>
+          </div>
+          <div class="summary-pill" data-filter="missing_in">
+            <span class="pill-label">Missing Check-In</span>
+            <span class="pill-count text-warning" id="countMissingIn">1</span>
+          </div>
+          <div class="summary-pill" data-filter="under_hours">
+            <span class="pill-label">Under-Hours (&lt; 7.5h)</span>
+            <span class="pill-count text-warning" id="countUnderHours">2</span>
+          </div>
+          <div class="summary-pill" data-filter="unreported">
+            <span class="pill-label">Absent / Zero Punches</span>
+            <span class="pill-count text-danger" id="countUnreported">1</span>
+          </div>
+        </div>
+
+        <!-- Exception Filtering & Data Grid -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Live Discrepancy Registry</h3>
+              <p class="card-subtitle">Detailed ledger of every detected attendance variance and supervisor resolution status</p>
+            </div>
+            <div class="filter-controls">
+              <select id="exceptionDeptFilter" class="form-select-sm">
+                <option value="all">All Departments</option>
+                <option value="Data Science & AI">Data Science & AI</option>
+                <option value="Full Stack Web">Full Stack Web</option>
+                <option value="Cloud Computing">Cloud Computing</option>
+                <option value="Cybersecurity">Cybersecurity</option>
+                <option value="DevOps & SRE">DevOps & SRE</option>
+                <option value="Mobile Development">Mobile Development</option>
+              </select>
+              <select id="exceptionResolutionFilter" class="form-select-sm">
+                <option value="all">All Resolution States</option>
+                <option value="pending">Pending Review Only</option>
+                <option value="resolved">Resolved / Regularized</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table" id="exceptionsTable">
+              <thead>
+                <tr>
+                  <th>Exception ID</th>
+                  <th>Mentor ID & Name</th>
+                  <th>Scheduled Class</th>
+                  <th>Actual Punch Stamp</th>
+                  <th>Punctuality & Variance</th>
+                  <th>Severity</th>
+                  <th>Resolution Status</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="exceptionsTableBody">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB 5: DATA ANALYSIS & TRENDS (NEW REQUEST) -->
+      <!-- ========================================== -->
+      <section id="tab-analysis" class="tab-panel" role="tabpanel">
+        <div class="panel-header">
+          <div>
+            <h1 class="panel-title">Data Analysis & University SLA Trends</h1>
+            <p class="panel-desc">In-depth statistical intelligence, class arrival timing flow, partner SLA governance health, and root-cause analysis for university stakeholders.</p>
+          </div>
+          <div class="header-action-group">
+            <button class="btn btn-secondary btn-sm" id="btnExportDashboardSummary">
+              <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Export SLA Summary
+            </button>
+          </div>
+        </div>
+
+        <!-- Upper Row: Hourly Distribution & SLA Health -->
+        <div class="dashboard-grid-two">
+          <!-- Class Arrival Punctuality Flow Visualizer -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Class Arrival Punctuality Flow</h3>
+                <p class="card-subtitle">Distribution of arrival punches relative to 09:30 AM class start</p>
+              </div>
+              <span class="badge badge-source">Benchmark: &lt; 09:30 AM</span>
+            </div>
+            <div class="card-body">
+              <div class="chart-timeline-bars" id="punchHourlyBars">
+                <!-- Injected via JavaScript -->
+              </div>
+              <div class="chart-legend">
+                <span class="legend-item"><span class="legend-color in-color"></span> On-Time (Arrived before 09:30 AM)</span>
+                <span class="legend-item"><span class="legend-color late-color"></span> Late Arrival (Arrived after 09:30 AM)</span>
+                <span class="legend-item"><span class="legend-color missing-color"></span> Missing Entry Punch</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- University Partner SLA & Audit Health -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title"><span id="slaCardUniName">Lovely Professional University</span> SLA Status</h3>
+                <p class="card-subtitle">Audit metrics reported to university academic administration</p>
+              </div>
+              <span class="badge badge-success">SLA Compliant</span>
+            </div>
+            <div class="card-body sla-body">
+              <div class="sla-metric-row">
+                <div class="sla-info">
+                  <div class="sla-name">Pre-Class Arrival Integrity (Before 09:30 AM)</div>
+                  <div class="sla-desc">Ensures mentors are present in computer labs before students arrive</div>
+                </div>
+                <div class="sla-val-group">
+                  <span class="sla-pct text-success" id="slaPunctualityPct">85.0%</span>
+                  <span class="sla-status pill pill-success">Within SLA</span>
+                </div>
+              </div>
+
+              <div class="sla-metric-row">
+                <div class="sla-info">
+                  <div class="sla-name">Check-Out Logging Integrity</div>
+                  <div class="sla-desc">Mentors completing evening check-out record on sign-in register</div>
+                </div>
+                <div class="sla-val-group">
+                  <span class="sla-pct text-danger" id="slaExitIntegrityPct">75.0%</span>
+                  <span class="sla-status pill pill-danger">Review Needed</span>
+                </div>
+              </div>
+
+              <div class="sla-metric-row">
+                <div class="sla-info">
+                  <div class="sla-name">Class Hours Coverage Attainment</div>
+                  <div class="sla-desc">Minimum 7.5 verified hours per assigned day</div>
+                </div>
+                <div class="sla-val-group">
+                  <span class="sla-pct text-amber" id="slaHoursCoveragePct">82.5%</span>
+                  <span class="sla-status pill pill-warning">Needs Review</span>
+                </div>
+              </div>
+
+              <div class="sla-callout">
+                <div class="sla-callout-icon">💡</div>
+                <div class="sla-callout-text">
+                  <strong>CipherSchools Analytics Insight:</strong> Mentors who arrive at lab blocks before 09:30 AM ensure uninterrupted curriculum delivery. Peak arrival window is between 08:50 AM and 09:15 AM.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lower Row: Causes Breakdown & Governance Checklist -->
+        <div class="dashboard-grid-two mt-4">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Common Causes Breakdown</h3>
+                <p class="card-subtitle">Operational root-cause analysis based on mentor comments</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="cause-bars">
+                <div class="cause-bar-row">
+                  <div class="cause-label-group">
+                    <span class="cause-name">Forgot paper / manual sign-out after class lab</span>
+                    <span class="cause-val">48% (12 cases)</span>
+                  </div>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill bg-danger" style="width: 48%;"></div>
+                  </div>
+                </div>
+
+                <div class="cause-bar-row">
+                  <div class="cause-label-group">
+                    <span class="cause-name">Highway Transit / Traffic Delay causing late entry (>09:30 AM)</span>
+                    <span class="cause-val">24% (6 cases)</span>
+                  </div>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill bg-amber" style="width: 24%;"></div>
+                  </div>
+                </div>
+
+                <div class="cause-bar-row">
+                  <div class="cause-label-group">
+                    <span class="cause-name">Academic Coordination Meeting with Faculty Lead</span>
+                    <span class="cause-val">16% (4 cases)</span>
+                  </div>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill bg-info" style="width: 16%;"></div>
+                  </div>
+                </div>
+
+                <div class="cause-bar-row">
+                  <div class="cause-label-group">
+                    <span class="cause-name">Unscheduled Leave / Personal Emergency</span>
+                    <span class="cause-val">12% (3 cases)</span>
+                  </div>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill bg-muted" style="width: 12%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Billing Risk & Hours Calculation</h3>
+                <p class="card-subtitle">Financial exposure mitigation for EdTech operations</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="sla-metric-row">
+                <div class="sla-info">
+                  <div class="sla-name">Uncertain Billing Risk Hours</div>
+                  <div class="sla-desc">Unreconciled punch gap across cohort today</div>
+                </div>
+                <div class="sla-val-group">
+                  <span class="sla-pct text-amber" id="kpiBillingRisk">19.5 <span style="font-size: 0.9rem; font-weight: normal;">hrs</span></span>
+                </div>
+              </div>
+
+              <div class="sla-metric-row">
+                <div class="sla-info">
+                  <div class="sla-name">Total Verified Teaching Hours Today</div>
+                  <div class="sla-desc">Committed attendance ready for university stipend invoice</div>
+                </div>
+                <div class="sla-val-group">
+                  <span class="sla-pct text-success">148.5 <span style="font-size: 0.9rem; font-weight: normal;">hrs</span></span>
+                </div>
+              </div>
+
+              <div class="sla-callout mt-3">
+                <div class="sla-callout-icon">📋</div>
+                <div class="sla-callout-text">
+                  Reconciling the 5 incomplete attendance punches before 18:30 PM will eliminate the 19.5 hrs billing risk and lock 100% attendance credit for university accounting.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-left">
+        <span>CipherTrack v3.0 • CipherSchools EdTech Operations Platform</span>
+        <span class="footer-dot">•</span>
+        <span>Class Punctuality & Manual/Excel Roster Engine</span>
+      </div>
+      <div class="footer-right">
+        <span id="footerCampusDisplay">Lovely Professional University (LPU) • Jalandhar-Delhi G.T. Road, Punjab</span>
+        <span class="footer-dot">•</span>
+        <button id="btnResetDemoFooter" class="btn-link-reset" title="Reset all demo state">Reset Demo State</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 1: REGULARIZE / RECONCILE DISCREPANCY MODAL -->
+  <!-- ======================================================== -->
+  <div class="modal-overlay" id="reconcileModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="modalMentorName">Reconcile Attendance Record</h3>
+          <p class="modal-subtitle" id="modalMentorMeta">MTR-102 • Priya Nair • Full Stack Web</p>
+        </div>
+        <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="punch-compare-card">
+          <div class="punch-box">
+            <span class="punch-box-label">Recorded Check-In</span>
+            <span class="punch-box-time text-success" id="modalCheckInTime">09:12 AM</span>
+            <span class="punch-box-sub" id="modalCheckInSub">Class Start: 09:30 AM (On-Time)</span>
+          </div>
+          <div class="punch-divider">➔</div>
+          <div class="punch-box">
+            <span class="punch-box-label">Recorded Check-Out</span>
+            <span class="punch-box-time text-danger" id="modalCheckOutTime">--:-- (Missing)</span>
+            <span class="punch-box-sub">No sign-out recorded</span>
+          </div>
+        </div>
+
+        <div class="form-group mt-3">
+          <label class="form-label" for="regularizeActionType">Regularization Method:</label>
+          <select id="regularizeActionType" class="form-select">
+            <option value="class_timetable">Pair with University Class Timetable (17:00 PM Exit)</option>
+            <option value="manual_override">Manual Punch Entry (Specify Time)</option>
+            <option value="mark_half_day">Approve as Half-Day (09:12 AM - 13:00 PM)</option>
+            <option value="excused_transit">Excused University Leave / Event</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="manualTimeGroup" style="display: none;">
+          <label class="form-label" for="manualAdjustedTime">Adjusted Check-Out Time:</label>
+          <input type="time" id="manualAdjustedTime" class="form-input" value="17:00">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reconcileReason">Coordinator Verification Note / Proof:</label>
+          <input type="text" id="reconcileReason" class="form-input" placeholder="e.g. Verified with Course Head; mentor was teaching until 17:00 PM" value="Verified in Class Lab with student roll call.">
+        </div>
+
+        <div class="callout callout-info">
+          <span class="callout-icon">ℹ️</span>
+          <div class="callout-text">
+            Regularizing this record will update the mentor's effective hours, resolve the open exception, and increase the cohort punctuality score in real time.
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="modalCancelBtn">Cancel</button>
+        <button class="btn btn-primary" id="modalConfirmBtn">Apply Reconciliation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 2: IMPORT EXCEL / CSV SHEET DATA -->
+  <!-- ======================================================== -->
+  <div class="modal-overlay" id="excelImportModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-lg">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Import Campus Attendance Sheet</h3>
+          <p class="modal-subtitle" id="excelModalSubtitle">Upload campus sign-in spreadsheet (.xlsx, .xls, .csv) for Lovely Professional University</p>
+        </div>
+        <button class="modal-close-btn" id="excelModalCloseBtn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="dropzone" id="excelDropzone">
+          <div class="dropzone-icon">📊</div>
+          <div class="dropzone-title">Drag & drop your University Attendance Sheet here</div>
+          <div class="dropzone-desc">Supports Excel (.xlsx, .xls) and CSV (.csv) formats with columns: Mentor ID, Scheduled Class, Check In, Check Out</div>
+          <input type="file" id="excelFileInput" accept=".csv, .xlsx, .xls" style="display: none;">
+          <button class="btn btn-outline btn-sm mt-3" onclick="document.getElementById('excelFileInput').click()">Browse Files</button>
+        </div>
+
+        <div class="excel-sample-actions">
+          <span>Need a sample template?</span>
+          <div>
+            <button class="btn btn-outline btn-xs" id="btnDownloadTemplate">Download Template.csv</button>
+            <button class="btn btn-primary btn-xs" id="btnLoadSampleExcel">⚡ Load Demo University Sheet (20 Mentors)</button>
+          </div>
+        </div>
+
+        <!-- Preview Table -->
+        <div class="preview-table-wrap" id="importPreviewWrap" style="display: none;">
+          <h4 style="font-size: 0.85rem; padding: 8px 12px; background: #f8fafc; border-bottom: 1px solid var(--border-subtle);">
+            Parsed Sheet Data Preview (<span id="parsedRowCount">20</span> rows ready)
+          </h4>
+          <table class="data-table" id="excelPreviewTable" style="font-size: 0.78rem;">
+            <thead>
+              <tr>
+                <th>Mentor ID</th>
+                <th>Name</th>
+                <th>Class Time</th>
+                <th>Check In</th>
+                <th>Punctuality</th>
+                <th>Check Out</th>
+                <th>Classroom</th>
+              </tr>
+            </thead>
+            <tbody id="excelPreviewBody">
+              <!-- Injected via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="excelModalCancelBtn">Cancel</button>
+        <button class="btn btn-primary" id="btnApplyExcelImport" disabled>Import & Update Attendance</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 3: LOG / EDIT MANUAL ATTENDANCE ENTRY -->
+  <!-- ======================================================== -->
+  <div class="modal-overlay" id="manualEntryModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Log Manual Attendance Entry</h3>
+          <p class="modal-subtitle">Record individual mentor punch directly into CipherTrack</p>
+        </div>
+        <button class="modal-close-btn" id="manualModalCloseBtn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="manualEntryMentorSelect">Select Mentor:</label>
+          <select id="manualEntryMentorSelect" class="form-select">
+            <!-- Injected via JS -->
+          </select>
+        </div>
+
+        <div class="dashboard-grid-two">
+          <div class="form-group">
+            <label class="form-label" for="manualScheduledTime">Scheduled Class Time:</label>
+            <input type="text" id="manualScheduledTime" class="form-input" value="09:30 AM">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="manualClassroom">Campus Block / Classroom:</label>
+            <input type="text" id="manualClassroom" class="form-input" value="Block 34, Lab 402">
+          </div>
+        </div>
+
+        <div class="dashboard-grid-two">
+          <div class="form-group">
+            <label class="form-label" for="manualEntryCheckIn">Actual Check-In Time:</label>
+            <input type="time" id="manualEntryCheckIn" class="form-input" value="09:15">
+            <small class="text-muted">Class starts at 09:30 AM. Punching before 09:30 AM is On-Time.</small>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="manualEntryCheckOut">Actual Check-Out Time:</label>
+            <input type="time" id="manualEntryCheckOut" class="form-input" value="17:00">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="manualEntryRemarks">Reason / Coordinator Remarks:</label>
+          <input type="text" id="manualEntryRemarks" class="form-input" placeholder="e.g. Verified from physical attendance sheet in CS department" value="Manually verified from faculty sign-in register.">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="manualModalCancelBtn">Cancel</button>
+        <button class="btn btn-primary" id="btnSaveManualEntry">Save Attendance Entry</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 4: OFFICIAL AUDIT REPORT MODAL (PDF / PRINT PREVIEW) -->
+  <!-- ======================================================== -->
+  <div class="modal-overlay" id="auditReportModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-lg">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Official Mentor Attendance & Governance Report</h3>
+          <p class="modal-subtitle" id="auditModalSubtitle">CipherSchools EdTech Operations & University Partnership Desk</p>
+        </div>
+        <button class="modal-close-btn" id="auditModalCloseBtn">&times;</button>
+      </div>
+
+      <div class="modal-body report-document" id="printableReportDoc">
+        <div class="report-header">
+          <div class="report-org">
+            <h2 id="reportOrgHeading">CIPHERSCHOOLS • LOVELY PROFESSIONAL UNIVERSITY (LPU)</h2>
+            <p>MENTOR ATTENDANCE & CLASS PUNCTUALITY AUDIT RECORD • PUNJAB CAMPUS</p>
+          </div>
+          <div class="report-stamp">
+            <span class="stamp-box">AUDIT VERIFIED</span>
+          </div>
+        </div>
+
+        <div class="report-meta-grid">
+          <div><strong>Date of Record:</strong> <span id="reportDate">October 28, 2026</span></div>
+          <div><strong>Cohort Size:</strong> 20 Deployed Mentors</div>
+          <div><strong>Standard Class Time:</strong> 09:30 AM (Shift: 09:00 AM – 17:00 PM)</div>
+          <div><strong>CipherSchools Lead:</strong> Naveen Kumar (Operations Coordinator)</div>
+        </div>
+
+        <div class="report-kpis-summary">
+          <div class="report-kpi-item">
+            <span class="rk-label">Pre-Class Punctuality</span>
+            <span class="rk-val" id="reportPunctualityRate">85.0%</span>
+          </div>
+          <div class="report-kpi-item">
+            <span class="rk-label">Total Exceptions</span>
+            <span class="rk-val" id="reportExceptionTotal">6 Cases</span>
+          </div>
+          <div class="report-kpi-item">
+            <span class="rk-label">Reconciled by Lead</span>
+            <span class="rk-val" id="reportReconciledTotal">0 Cases</span>
+          </div>
+          <div class="report-kpi-item">
+            <span class="rk-label">Total Verified Hours</span>
+            <span class="rk-val" id="reportTotalHours">148.5 hrs</span>
+          </div>
+        </div>
+
+        <div class="report-table-wrap mt-3">
+          <h4>Cohort Attendance & Sign-In Ledger</h4>
+          <table class="report-table" id="reportAuditTable">
+            <thead>
+              <tr>
+                <th>Mentor ID</th>
+                <th>Mentor Name</th>
+                <th>Department</th>
+                <th>Scheduled Class</th>
+                <th>Check-In</th>
+                <th>Punctuality (Before 09:30 AM)</th>
+                <th>Check-Out</th>
+                <th>Net Hours</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="reportTableBody">
+              <!-- Injected via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="report-signature-row">
+          <div class="sig-block">
+            <div class="sig-line"></div>
+            <span>Naveen Kumar</span>
+            <small>CipherSchools Operational Lead</small>
+          </div>
+          <div class="sig-block">
+            <div class="sig-line"></div>
+            <span id="reportDeanSignName">Dr. S. K. Sen</span>
+            <small id="reportDeanSignTitle">Dean of Academic Operations • Lovely Professional University</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="auditModalCancelBtn">Close</button>
+        <button class="btn btn-secondary" onclick="window.print()">
+          <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+          </svg>
+          Print / Save PDF
+        </button>
+        <button class="btn btn-primary" id="btnConfirmAuditSignoff">Approve & Lock Audit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="js/mockData.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
