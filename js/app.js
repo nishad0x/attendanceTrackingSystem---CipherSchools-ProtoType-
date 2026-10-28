@@ -1426,8 +1426,10 @@
   // Application Bootstrapping
   function init() {
     initEvents();
+    updateUniversityCampus('lpu', true);
     recalculateMetrics();
     renderDashboard();
+    renderAnalysis();
     renderReconciliation();
     renderReminders();
     renderExceptions();
