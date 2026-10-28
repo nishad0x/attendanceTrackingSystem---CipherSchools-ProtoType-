@@ -1218,8 +1218,10 @@
     state.activeExceptionFilter = 'all';
     state.parsedExcelData = null;
 
+    updateUniversityCampus('lpu', true);
     recalculateMetrics();
     renderDashboard();
+    renderAnalysis();
     renderReconciliation();
     renderReminders();
     renderExceptions();
@@ -1247,8 +1249,16 @@
         if (targetId === 'tab-reconciliation') renderReconciliation();
         if (targetId === 'tab-reminders') renderReminders();
         if (targetId === 'tab-exceptions') renderExceptions();
+        if (targetId === 'tab-analysis') renderAnalysis();
       });
     });
+
+    // University Campus Selector
+    if (dom.universitySelect) {
+      dom.universitySelect.addEventListener('change', (e) => {
+        updateUniversityCampus(e.target.value);
+      });
+    }
 
     // Top action buttons
     const btnOpenExcelModal = document.getElementById('btnOpenExcelModal');
@@ -1259,6 +1269,7 @@
 
     const btnResetDemo = document.getElementById('btnResetDemo');
     if (btnResetDemo) btnResetDemo.addEventListener('click', resetDemo);
+    if (dom.btnResetDemoFooter) dom.btnResetDemoFooter.addEventListener('click', resetDemo);
 
     const btnQuickBatchReminder = document.getElementById('btnQuickBatchReminder');
     if (btnQuickBatchReminder) {
