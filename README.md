@@ -11,9 +11,10 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Production--Ready-success?style=flat-square&color=10b981" alt="Status" />
-  <img src="https://img.shields.io/badge/Mentors-20%20Deployed%20Cohort-blue?style=flat-square&color=2563eb" alt="Cohort" />
-  <img src="https://img.shields.io/badge/Punctuality_Rule-Before%2009%3A30%20AM-orange?style=flat-square&color=f37021" alt="Punctuality Rule" />
-  <img src="https://img.shields.io/badge/Shift_End-17%3A00%20PM-amber?style=flat-square&color=f59e0b" alt="Shift End" />
+  <img src="https://img.shields.io/badge/Design-Apple%20Human%20Interface%20Guidelines-black?style=flat-square&logo=apple" alt="Apple HIG" />
+  <img src="https://img.shields.io/badge/Mentors-20%20Deployed%20Cohort-blue?style=flat-square&color=0071e3" alt="Cohort" />
+  <img src="https://img.shields.io/badge/Punctuality_Rule-Before%2009%3A30%20AM-orange?style=flat-square&color=ff9500" alt="Punctuality Rule" />
+  <img src="https://img.shields.io/badge/Shift_End-17%3A00%20PM-amber?style=flat-square&color=ff9f0a" alt="Shift End" />
   <img src="https://img.shields.io/badge/Zero_Dependencies-Vanilla_JS_%26_CSS3-black?style=flat-square" alt="Tech Stack" />
 </p>
 
@@ -154,8 +155,9 @@ Navigate to **`http://localhost:3000`** in your browser.
 
 | Layer | Technology | Key Capabilities |
 | :--- | :--- | :--- |
-| **Frontend Core** | Semantic HTML5 & CSS3 | Custom design system, responsive grid, zero external CSS bloat |
-| **Typography** | Plus Jakarta Sans & JetBrains Mono | Legible telemetry data, timestamps, and punch ledgers |
+| **Design Language** | Apple Human Interface Guidelines (HIG) | macOS Sequoia frosted glass, iOS switches, Dynamic Island, squircle cards |
+| **Typography** | SF Pro & SF Mono (Apple System Fonts) | Legible telemetry data, tabular numerals (`tabular-nums`), punch ledgers |
+| **Frontend Core** | Semantic HTML5 & Modern CSS3 | Custom Apple design system, responsive layout, zero external CSS bloat |
 | **Logic & State** | Vanilla ECMAScript (ES6+) | Instant DOM reactivity, zero external build overhead |
 | **Data Persistence** | Browser `localStorage` | Seamless state persistence between tab reloads & sessions |
 | **Import / Export** | Client-side CSV & Matrix Parser | Instant Excel/CSV parsing and structured payroll CSV export |
