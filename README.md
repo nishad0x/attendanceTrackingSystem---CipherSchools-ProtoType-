@@ -1,58 +1,167 @@
-# CipherTrack by CipherSchools — EdTech Mentor Attendance Governance Desk
+<p align="center">
+  <img src="assets/cipherschools-logo.png" width="96" height="96" alt="CipherSchools Logo" />
+</p>
 
-> **University Operations & Attendance Reconciliation Platform**  
-> *Built for CipherSchools Operational Coordinators overseeing 20 mentors deployed at university partner campus.*
+<h1 align="center">CipherTrack</h1>
+
+<p align="center">
+  <strong>EdTech Mentor Attendance Governance & Reconciliation Desk</strong><br>
+  Built for CipherSchools Operational Coordinators overseeing 20 mentors deployed at university partner campuses.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Status-Production--Ready-success?style=flat-square&color=10b981" alt="Status" />
+  <img src="https://img.shields.io/badge/Mentors-20%20Deployed%20Cohort-blue?style=flat-square&color=2563eb" alt="Cohort" />
+  <img src="https://img.shields.io/badge/Punctuality_Rule-Before%2009%3A30%20AM-orange?style=flat-square&color=f37021" alt="Punctuality Rule" />
+  <img src="https://img.shields.io/badge/Shift_End-17%3A00%20PM-amber?style=flat-square&color=f59e0b" alt="Shift End" />
+  <img src="https://img.shields.io/badge/Zero_Dependencies-Vanilla_JS_%26_CSS3-black?style=flat-square" alt="Tech Stack" />
+</p>
 
 ---
 
-## 🎯 The Operational Problem Solved
+<p align="center">
+  <img src="assets/screenshots/01-dashboard.png" width="95%" alt="CipherTrack Operational Dashboard Preview" style="border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);" />
+</p>
 
-CipherSchools has deployed **20 mentors** to Lovely Professional University (LPU). Because attendance is not automated with biometric hardware machines:
-- Attendance entries are recorded manually or imported via daily university Excel / CSV sheets.
-- Mentors must be in their designated classrooms and punched in **before scheduled class start time (09:30 AM)**.
-- Some mentors arrive after 09:30 AM, and some forget their afternoon / evening sign-out after class labs.
-- This creates incomplete punch records, billing ambiguity, stipend uncertainties, and academic coordinator audit friction.
+---
+
+## 📌 Executive Overview
+
+CipherSchools deploys **20 technical mentors** to partner university campuses (Lovely Professional University, Chandigarh University, Chitkara, and Thapar). Because academic buildings and lecture halls lack biometric hardware:
+
+* **Manual Rosters & CSV Exports**: Attendance is tracked via sign-in sheets and daily university Excel uploads.
+* **09:30 AM Class Cutoff**: Mentors must be present in assigned classrooms and logged in **before 09:30 AM**.
+* **Incomplete Evening Punches**: Lab sessions frequently lead to forgotten **17:00 PM** check-outs.
+* **Billing & Audit Risk**: Missing punches introduce stipend calculation friction and partner compliance gaps.
+
+**CipherTrack** provides a unified desk to reconcile rosters against academic timetables, automate WhatsApp arrival/exit alerts, resolve discrepancies in one click, and lock auditable university reports.
+
+---
+
+## 🏛️ Partner Campus Deployments
+
+CipherTrack dynamically switches campus configurations, shift rules, and reporting formats across our partner institutions:
+
+<div align="center">
+
+| Lovely Professional University | Chandigarh University | Chitkara University | Thapar Institute |
+| :---: | :---: | :---: | :---: |
+| <img src="assets/lpu-logo.svg" height="38" alt="LPU Logo" /> | <img src="assets/cu-logo.png" height="38" alt="CU Logo" /> | <img src="assets/chitkara-logo.svg" height="38" alt="Chitkara Logo" /> | <img src="assets/thapar-logo.svg" height="38" alt="Thapar Logo" /> |
+| **LPU Phagwara** | **CU Mohali** | **Chitkara Rajpura** | **TIET Patiala** |
+
+</div>
+
+---
+
+## 📐 System Architecture & Workflow
+
+```mermaid
+flowchart LR
+    A["📄 Campus Excel / Manual Sign-in"] --> B["⚡ CipherTrack Engine"]
+    C["📅 Scheduled Class Timetable (09:30 AM)"] --> B
+
+    subgraph Governance Core
+        B --> D{"Class Arrival Check"}
+        D -- "Before 09:30 AM" --> E["✓ On-Time Verified"]
+        D -- "After 09:30 AM" --> F["⚠️ Late Flag + Supervisor Alert"]
+        D -- "Missing Punch" --> G["🔍 Auto-Suggest Reconciliation"]
+    end
+
+    subgraph Automated Dispatch
+        B --> H["📱 09:15 AM Pre-Class WhatsApp Alert"]
+        B --> I["📱 16:45 PM Exit Safeguard Reminder"]
+        B --> J["📊 09:40 AM Supervisor Digest"]
+    end
+
+    G --> K["✍️ Coordinator Sign-Off"]
+    E --> L["📜 Locked University Payroll Report"]
+    K --> L
+```
 
 ---
 
 ## 🚀 The 4 Integrated Solutions
 
-### Solution 1: Daily Attendance Reconciliation
-* **Excel Sheet vs Class Timetable Matrix**: Compares university sign-in sheet entries against scheduled class start times (09:30 AM) and shift exit times (17:00 PM).
-* **One-Click Regularization**: Modal workflow allowing coordinators to resolve missing punches using student attendance records, classroom syllabus logs, or approved excuses.
-* **Auto-Suggest Timetable Pairing**: Algorithmic engine that automatically matches incomplete morning/evening records with scheduled course timetables.
-* **Immutable Coordinator Audit Trail**: Real-time log tracking every manual adjustment with coordinator signature for academic audit compliance.
+### 1. Daily Attendance Reconciliation Desk
+* **Timetable Comparison Matrix**: Pairs recorded punches against class start times (09:30 AM) and shift exits (17:00 PM).
+* **Auto-Suggest Timetable Pairing**: Algorithmic engine infers missing records from student LMS rosters and timetable data.
+* **One-Click Regularization**: Resolve missing punches instantly with an immutable audit log.
 
-### Solution 2: Automated Reminders & Alerts Dispatcher
-* **Rule #1: 09:15 AM Pre-Class Entry Alert**: Detects missing check-ins 15 minutes before 09:30 AM class and alerts mentors via WhatsApp / SMS.
-* **Rule #2: 16:45 PM Shift-End Sign-Out Safeguard**: Proactively reminds mentors in class labs 15 minutes before 17:00 PM to record their evening sign-out.
-* **Rule #3: 09:40 AM Coordinator Punctuality Digest**: Automated morning digest detailing mentors who were late (after 09:30 AM) or absent.
-* **Live WhatsApp Simulator**: Interactive phone mockup with two-way simulated replies.
-
-### Solution 3: Exception Reporting & Audit Desk
-* **Granular Discrepancy Registry**: Categorization of Late Arrivals (after 09:30 AM), Missing Check-Outs, Missing Check-Ins, Under-Hours, and Unreported Absences.
-* **Direct Resolution Pipeline**: Change status from "Action Required" to "Reconciled".
-* **One-Click CSV Export**: Downloads structured `.csv` records for payroll and operations.
-* **Formal University Audit Document**: Clean, printable formal audit report with university header, verification stamp, and coordinator/dean sign-off blocks.
-
-### Solution 4: Accountability Dashboard
-* **Executive Operational KPIs**: Cohort Strength (20), Verified Complete, Critical Exceptions Count, **Class Punctuality Rate (% on-time before 09:30 AM)**, and Billing Risk (Uncertain hours).
-* **Class Arrival Punctuality Flow**: Distribution visualizer comparing arrivals before 09:30 AM vs late arrivals.
-* **20 Mentors Registry**: Displays Mentor ID, Department, **Scheduled Class Time**, **Actual Check-In**, **Class Punctuality Status (Before 09:30 AM)**, **Check-Out**, and Net Hours. *(30-day compliance column removed)*.
+<p align="center">
+  <img src="assets/screenshots/02-reconciliation.png" width="95%" alt="Attendance Reconciliation Desk" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);" />
+</p>
 
 ---
 
-## 📥 Manual Entry & Excel Import Features
+### 2. Automated Reminders & Alerts Dispatcher
+* **Rule #1 (09:15 AM Pre-Class Entry)**: Warns mentors without punches 15 minutes before 09:30 AM classes.
+* **Rule #2 (16:45 PM Shift-End Safeguard)**: Proactively reminds lab mentors 15 minutes before 17:00 PM to record sign-out.
+* **Rule #3 (09:40 AM Supervisor Escalation)**: Delivers an automated morning digest of late/unreported mentors to the lead.
+* **Interactive WhatsApp Simulator**: Test message templates and two-way mentor responses in real time.
 
-1. **Import Excel Sheet**: Drag-and-drop or select any `.xlsx` / `.csv` university attendance sheet, preview parsed rows, and update the cohort in one click.
-2. **Log Manual Entry**: Add or edit individual mentor punch entries directly with class time, room, check-in, check-out, and verification notes.
+<p align="center">
+  <img src="assets/screenshots/03-reminders-whatsapp.png" width="95%" alt="Automated Reminders & WhatsApp Simulator" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);" />
+</p>
 
 ---
 
-## 🏃 Quick Start (How to Run)
+### 3. Accountability Telemetry & Cohort Registry
+* **Live KPI Deck**: Deployed Mentors (20), Verified Complete, Active Exceptions, and Class Punctuality Rate.
+* **Search & Roster Filters**: Filter instantly by On-Time, Late Arrival, Missing Out, Missing In, or Absent.
+* **Fast Manual Punch Logging**: Record walk-in punches with coordinator notes and room assignments.
 
-Run a local server:
-```powershell
-python -m http.server 3000
+---
+
+### 4. University Exception Reporting & Formal Audit
+* **Discrepancy Registry**: Centralized clearinghouse for under-hours, unexcused tardiness, and punch gaps.
+* **Official University Audit Document**: Clean, printable formal audit report with university header, verification stamp, and Dean/Coordinator signature blocks.
+* **CSV Export**: One-click download of standardized attendance data for payroll integration.
+
+<p align="center">
+  <img src="assets/screenshots/05-university-audit-report.png" width="95%" alt="Official University Audit Report" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);" />
+</p>
+
+---
+
+## ⚡ Quick Start
+
+No build tools, bundlers, or package installations required. Runs natively in any modern browser.
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/cipherschools/attendanceTrackingPlatform.git
+cd attendanceTrackingPlatform
 ```
-Then visit: **`http://localhost:3000`** in your browser.
+
+### 2. Start a local server
+```bash
+# Using Python (recommended)
+python -m http.server 3000
+
+# OR using Node.js
+npx serve .
+```
+
+### 3. Open in browser
+Navigate to **`http://localhost:3000`** in your browser.
+
+> [!TIP]
+> Use the **"Import Excel Sheet"** button to load sample university attendance data or upload your own `.xlsx` / `.csv` file. You can reset to the baseline cohort anytime via the reset trigger.
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technology | Key Capabilities |
+| :--- | :--- | :--- |
+| **Frontend Core** | Semantic HTML5 & CSS3 | Custom design system, responsive grid, zero external CSS bloat |
+| **Typography** | Plus Jakarta Sans & JetBrains Mono | Legible telemetry data, timestamps, and punch ledgers |
+| **Logic & State** | Vanilla ECMAScript (ES6+) | Instant DOM reactivity, zero external build overhead |
+| **Data Persistence** | Browser `localStorage` | Seamless state persistence between tab reloads & sessions |
+| **Import / Export** | Client-side CSV & Matrix Parser | Instant Excel/CSV parsing and structured payroll CSV export |
+
+---
+
+<p align="center">
+  <sub>CipherTrack is maintained by the CipherSchools EdTech Operations & University Delivery Team.</sub>
+</p>

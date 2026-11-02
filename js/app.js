@@ -1433,6 +1433,20 @@
     renderReconciliation();
     renderReminders();
     renderExceptions();
+
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialTab = urlParams.get('tab') || window.location.hash.replace('#', '');
+      if (initialTab) {
+        const matchingTab = document.querySelector(`[data-tab="${initialTab}"]`);
+        if (matchingTab) matchingTab.click();
+      }
+      if (urlParams.get('modal') === 'excel') openExcelImportModal();
+      if (urlParams.get('modal') === 'audit') openAuditReportModal();
+      if (urlParams.get('modal') === 'reconcile') openReconcileModal('MTR-102');
+    } catch (e) {
+      // Ignore if running without location
+    }
   }
 
   // Expose global controller
